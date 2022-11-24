@@ -1,99 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Bowling</title>
-    <link rel="stylesheet" href="../css/style.css">
-    <script src="../js/Bowling.js"></script>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Bowling</title>
+        <link rel="stylesheet" href="../css/style.css">
+        <script src="../js/libs/three/three.js"></script>
+        <script src="../js/libs/three/controls/OrbitControls.js"></script>
+        <script src="../js/libs/other/ThreeCSG.js"></script>
+        <script src="../js/Bezier.js"></script>
+        <script src="../js/GeometrieUtile.js"></script>
+        <script src="../js/01_lathe.js"></script>
+        <script src="../js/ModeleMateriaux.js"></script>
+    </head>
+    <body onload="init()">
 
-<table>
-    <tr>
-        <th>Mène</th>
-        <td colspan="2">1</td>
-        <td colspan="2">2</td>
-        <td colspan="2">3</td>
-        <td colspan="2">4</td>
-        <td colspan="2">5</td>
-        <td colspan="2">6</td>
-        <td colspan="2">7</td>
-        <td colspan="2">8</td>
-        <td colspan="2">9</td>
-        <td colspan="2">10</td>
-    </tr>
-    <tr id="equipe1">
-        <th rowspan="2">Equipe 1 </th>
-        <td class="eq1 score1">1</td>
-        <td class="eq1 score1">2</td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-        <td class="eq1 score1"></td>
-    </tr>
-    <tr>
-        <td class="eq1 score1" colspan="2">3</td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-        <td class="eq1 score1" colspan="2"></td>
-    </tr>
-    <tr id="equipe2">
-        <th rowspan="2">Equipe 1 </th>
-        <td class="eq2 score1">3</td>
-        <td class="eq2 score1">4</td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-        <td class="eq2 score1"></td>
-    </tr>
-    <tr>
-        <td class="eq2 E2ScoreTotal1" colspan="2">7</td>
-        <td class="eq2 E2ScoreTotal2" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal3" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal4" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal5" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal6" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal7" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal8" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal9" colspan="2"></td>
-        <td class="eq2 E2ScoreTotal10" colspan="2"></td>
-    </tr>
-</table>
+        <table>
+            <tr>
+                <th>Mène</th>
+                <td colspan="2">1</td>
+                <td colspan="2">2</td>
+                <td colspan="2">3</td>
+                <td colspan="2">4</td>
+                <td colspan="2">5</td>
+                <td colspan="2">6</td>
+                <td colspan="2">7</td>
+                <td colspan="2">8</td>
+                <td colspan="2">9</td>
+                <td colspan="2">10</td>
+            </tr>
+            <tr id="equipe1">
+                <th rowspan="2">Equipe 1 </th>
+                <td class="eq1 score1">1</td>
+                <td class="eq1 score1">2</td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+                <td class="eq1 score1"></td>
+            </tr>
+            <tr>
+                <td class="eq1 score1" colspan="2">3</td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+                <td class="eq1 score1" colspan="2"></td>
+            </tr>
+            <tr id="equipe2">
+                <th rowspan="2">Equipe 1 </th>
+                <td class="eq2 score1">3</td>
+                <td class="eq2 score1">4</td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+                <td class="eq2 score1"></td>
+            </tr>
+            <tr>
+                <td class="eq2 E2ScoreTotal1" colspan="2">7</td>
+                <td class="eq2 E2ScoreTotal2" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal3" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal4" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal5" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal6" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal7" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal8" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal9" colspan="2"></td>
+                <td class="eq2 E2ScoreTotal10" colspan="2"></td>
+            </tr>
+        </table>
 
-<canvas id="canvas"></canvas>
-</body>
+        <canvas id="canvas"></canvas>
+        <script src="../js/Bowling.js"></script>
+    </body>
 </html>
