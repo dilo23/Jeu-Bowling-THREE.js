@@ -13,14 +13,15 @@ canvas{
 table {
     border: 1px solid #333;
     border-collapse: collapse;
-    width: 80%;
-    height: 20%;
     margin-left: auto;
     margin-right: auto;
 }
 th{
     border: black 1px solid;
     font-size: 20px;
+    width: 100px;
+    height: 20px;
+
 }
 td {
     width: 50px;

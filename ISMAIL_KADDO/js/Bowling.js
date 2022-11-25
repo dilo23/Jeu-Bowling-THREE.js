@@ -16,14 +16,14 @@ function init() {
     let camera = new THREE.PerspectiveCamera( 30, canvasWidth / canvasHeight, 1, 1000 );
 
     let renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas});
-    renderer.setClearColor(new THREE.Color(0x00001F));
+    renderer.setClearColor(new THREE.Color(0XFFFFFF));
     renderer.setSize(canvasWidth ,canvasHeight);
 
     /*scene.add( new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0).normalize(), new THREE.Vector3(0, 0, 0),1.0,0xff0000));//rouge
     scene.add( new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0).normalize(),new THREE.Vector3(0, 0, 0),1.0,0x00ff00));//vert
     scene.add( new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1).normalize(),new THREE.Vector3(0, 0, 0),1.0,0x0000ff));//bleu*/
 
-    camera.position.set(-11.5, 0, 0.5);
+    camera.position.set(11.5, 0, 0.5);
     camera.up.set(0, 0, 1);
     camera.lookAt(0, 0, 0);
 
@@ -34,7 +34,10 @@ function init() {
     scene.add(creerPiste());
     scene.add(creerRigoleGauche());
     scene.add(creerRigoleDroite());
-    scene.add(creerBouleEquipe1());
+    let boule = creerBouleEquipe2(10,0);
+    scene.add(boule);
+
+
     scene.add(creation_quille(-9.5,0.1));
     scene.add(creation_quille(-9.5,0.3));
     scene.add(creation_quille(-9.5,-0.1));
@@ -70,7 +73,7 @@ function render() {
 }
 function creerPiste() {
     let floorTexture = new THREE.TextureLoader().load('../textures/sol.png');
-    let floorMaterial = new THREE.MeshBasicMaterial({map: floorTexture, clearCoat: 1.0});
+    let floorMaterial = new THREE.MeshBasicMaterial({map: floorTexture});
     let floorGeometry = new THREE.BoxGeometry(20,1,0.1);
     return new THREE.Mesh(floorGeometry, floorMaterial);
 }
@@ -140,50 +143,73 @@ function creerRigoleGauche(){
 
 }
 
-function creerBouleEquipe1(){
+function creerBouleEquipe1(x,y){
     let nbrPoints = 50;
     let R=0.08;
     let sphereGeometry = new THREE.SphereGeometry(R, nbrPoints, nbrPoints);
     let sphereMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
     let sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.set(9, 0, 0.13);
-    return sphere;
+    sphere.position.set(x, y, 0.13);
+    let geometry = new THREE.Geometry();
+    let material = new THREE.LineBasicMaterial({ color: 0x0000FF });
+
+    for (let i = 0; i <= nbrPoints; i++) {
+        let t = (i / nbrPoints) * Math.PI * 2;
+        geometry.vertices.push(
+            new THREE.Vector3(
+                Math.cos(t) * R,
+                Math.sin(t) * R,
+                0));
+    }
+
+    let cercle = new THREE.Line(geometry, material);
+    cercle.position.set(x, y, 0.12);
+    let groupe = new THREE.Group();
+    groupe.add(sphere);
+    groupe.add(cercle);
+    return groupe;
 
 
 }
 
-function creerBouleEquipe2(){
+function creerBouleEquipe2(x,y){
     let nbrPoints = 50;
     let R=0.08;
     let sphereGeometry = new THREE.SphereGeometry(R, nbrPoints, nbrPoints);
-    let sphereMaterial = new THREE.MeshBasicMaterial({color: 0x0000ff});
+    let sphereMaterial = new THREE.MeshBasicMaterial({color: 0x0000FF});
     let sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.set(10, 0, 0.13);
-    return sphere;
+    sphere.position.set(x, y, 0.133);
+    let geometry = new THREE.Geometry();
+    let material = new THREE.LineBasicMaterial({ linewidth: 3,color: 0xFF0000});
 
+    for (let i = 0; i <= nbrPoints; i++) {
+        let t = (i / nbrPoints) * Math.PI * 2;
+        geometry.vertices.push(
+            new THREE.Vector3(
+                Math.cos(t) * R,
+                Math.sin(t) * R,
+                0));
+    }
 
+    let cercle = new THREE.Line(geometry, material);
+    cercle.position.set(x, y,  0.133);
+    let groupe = new THREE.Group();
+    groupe.add(sphere);
+    groupe.add(cercle);
+    return groupe;
 }
 
-function creation_quille(X,Y,bool) { //Permet de créer une quille aux coordonnées (X,Y,0)
-    let nbPts = 100;//nbe de pts de la courbe de Bezier
-    let epaiB = 5;//epaisseur de la courbe de Bezier
+function creation_quille(X,Y) { //Permet de créer une quille aux coordonnées (X,Y,0)
     let nbPtCB = 50;//nombre de points sur la courbe de Bezier
     let nbePtRot = 150;// nbe de points sur les cercles
-    let dimPt = 0.02;
-    //QUILLE : 38,1 cm de haut, 11,43 cm à l'endroit le plus bombé, 5,7cm à la base.
-    //1ère Lathe
 
+    //1ère Lathe
     //Points de contrôle et courbe de Bézier
     //20 cm de hauteur, 11 cm de largeur partie milieu haute, 5 cm à la base
-    let P0 = new THREE.Vector3(0.1, 0, 0);
-    let P1 = new THREE.Vector3(0.06, 0.25, 0);
-    let P2 = new THREE.Vector3(0.05, 0.25, 0);
-    let P3 = new THREE.Vector3(0, 0.24, 0);
-    // tracePt(scene, P0, "#FFFFFF", dimPt, true);
-    // tracePt(scene, P1, "#000000", dimPt, true);
-    // tracePt(scene, P2, "#008888", dimPt, true);
-    // tracePt(scene, P3, "#FF0000", dimPt, true);
-    let cbeBez1 = TraceBezierCubique(P0, P1, P2, P3, nbPts, "#FF00FF", epaiB);
+    let P0 = new THREE.Vector3(0.05, 0, 0);
+    let P1 = new THREE.Vector3(0.03, 0.13, 0);
+    let P2 = new THREE.Vector3(0.025, 0.13, 0);
+    let P3 = new THREE.Vector3(0, 0.12, 0);
     let lathe1 = latheBez3(nbPtCB, nbePtRot, P0, P1, P2, P3, "#FFFFFF", 1, false);
 
     //2ème Lathe
@@ -191,13 +217,9 @@ function creation_quille(X,Y,bool) { //Permet de créer une quille aux coordonn�
     let pente1 = (P2.y-P3.y) / (P2.x-P3.x);
     let ord1 = (P2.y) - pente1*(P2.x);
     let C0 = P3;
-    let C1 = new THREE.Vector3(-0.1, (pente1*(-0.1)+ord1), 0);
-    let C2 = new THREE.Vector3(-0.04, -0.35, 0);
-    let C3 = new THREE.Vector3(-0.1,0, 0);
-    // tracePt(scene, C1, "#000000", dimPt, true);
-    // tracePt(scene, C2, "#008888", dimPt, true);
-    // tracePt(scene, C3, "#FF0000", dimPt, true);
-    let cbeBez2 = TraceBezierCubique(C0, C1, C2, C3, nbPts, "#FF00FF", epaiB);
+    let C1 = new THREE.Vector3(-0.04, (pente1*(-0.005)+ord1), 0);
+    let C2 = new THREE.Vector3(-0.02, -0.18, 0);
+    let C3 = new THREE.Vector3(-0.05,0, 0);
     let lathe2 = latheBez3(nbPtCB, nbePtRot, C0, C1, C2, C3, "#bd6c14", 1, false);
 
     //3ème Lathe
@@ -205,20 +227,19 @@ function creation_quille(X,Y,bool) { //Permet de créer une quille aux coordonn�
     pente1 = (C2.y-C3.y) / (C2.x-C3.x);
     ord1 = (C2.y) - pente1*(C2.x);
     let D0 = C3;
-    let D1 = new THREE.Vector3((-0.2 - ord1)/pente1, -0.2, 0);
-    let D2 = new THREE.Vector3(0.24, 0.25, 0);
-    let D3 = new THREE.Vector3(0, 0.25, 0);
-    // tracePt(scene, D1, "#000000", dimPt, true);
-    // tracePt(scene, D2, "#008888", dimPt, true);
-    // tracePt(scene, D3, "#FF0000", dimPt, true);
-
+    let D1 = new THREE.Vector3((-0.1 - ord1)/pente1, -0.1, 0);
+    let D2 = new THREE.Vector3(0.12, 0.13, 0);
+    let D3 = new THREE.Vector3(0, 0.13, 0);
     let lathe3 = latheBez3(nbPtCB, nbePtRot, D0, D1, D2, D3, "#FFFFFF", 1, false);
+
+
+
     //Placement des lathes sur la scène
-    lathe1.position.set(X, Y, 0.25);
+    lathe1.position.set(X, Y, 0.17);
     lathe1.rotation.set(-Math.PI / 2, 0, 0);
-    lathe2.position.set(X, Y, 0.25);
+    lathe2.position.set(X, Y, 0.17);
     lathe2.rotation.set(-Math.PI/2, 0, 0);
-    lathe3.position.set(X, Y, 0.25);
+    lathe3.position.set(X, Y, 0.17);
     lathe3.rotation.set(Math.PI/2 , 0, 0);
     let grp = new THREE.Group();
     grp.add(lathe1);
