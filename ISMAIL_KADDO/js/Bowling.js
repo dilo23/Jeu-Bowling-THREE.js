@@ -7,13 +7,7 @@ let canvasHeight = canvas.offsetHeight;
 
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera( 30, canvasWidth / canvasHeight, 1, 1000 );
-
 function init() {
-    let canvasWidth = canvas.offsetWidth;
-    let canvasHeight = canvas.offsetHeight;
-
-    let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera( 30, canvasWidth / canvasHeight, 1, 1000 );
 
     let renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas});
     renderer.setClearColor(new THREE.Color(0XFFFFFF));
@@ -34,9 +28,6 @@ function init() {
     scene.add(creerPiste());
     scene.add(creerRigoleGauche());
     scene.add(creerRigoleDroite());
-    let boule = creerBouleEquipe2(10,0);
-    scene.add(boule);
-
 
     scene.add(creation_quille(-9.5,0.1));
     scene.add(creation_quille(-9.5,0.3));
@@ -63,6 +54,27 @@ function init() {
 
 }
 init();
+
+
+//********************************************************
+//
+//  D E B U T     M E N U     G U I
+//
+//********************************************************
+
+    let gui = new dat.GUI();
+    let menuGUI = { // les variables du menu
+        x: 0};
+    gui.add(menuGUI, 'Positition boule', -10, 10);
+    let x=gui.add(menuGUI, 'x', -10, 10).listen();
+    alert(x);
+
+//********************************************************
+//
+//  F I N     M E N U     G U I
+//
+//*********************************************************
+
 
 function render() {
     stats.update();
@@ -143,15 +155,25 @@ function creerRigoleGauche(){
 
 }
 
-function creerBouleEquipe1(x,y){
+function creerBoule(x,y,equipe){
+    let couleurSphere;
+    let couleurCercle;
+    if(equipe==1){
+        couleurSphere = new THREE.Color(0xff0000);
+        couleurCercle = new THREE.Color(0x0000ff);
+    }
+    else {
+        couleurSphere = new THREE.Color(0x0000ff);
+        couleurCercle = new THREE.Color(0xff0000);
+    }
     let nbrPoints = 50;
     let R=0.08;
     let sphereGeometry = new THREE.SphereGeometry(R, nbrPoints, nbrPoints);
-    let sphereMaterial = new THREE.MeshBasicMaterial({color: 0xff0000});
+    let sphereMaterial = new THREE.MeshBasicMaterial({color: couleurSphere});
     let sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphere.position.set(x, y, 0.13);
     let geometry = new THREE.Geometry();
-    let material = new THREE.LineBasicMaterial({ color: 0x0000FF });
+    let material = new THREE.LineBasicMaterial({ color: couleurCercle });
 
     for (let i = 0; i <= nbrPoints; i++) {
         let t = (i / nbrPoints) * Math.PI * 2;
@@ -165,38 +187,12 @@ function creerBouleEquipe1(x,y){
     let cercle = new THREE.Line(geometry, material);
     cercle.position.set(x, y, 0.12);
     let groupe = new THREE.Group();
+    groupe.name="boule";
     groupe.add(sphere);
     groupe.add(cercle);
     return groupe;
 
 
-}
-
-function creerBouleEquipe2(x,y){
-    let nbrPoints = 50;
-    let R=0.08;
-    let sphereGeometry = new THREE.SphereGeometry(R, nbrPoints, nbrPoints);
-    let sphereMaterial = new THREE.MeshBasicMaterial({color: 0x0000FF});
-    let sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.position.set(x, y, 0.133);
-    let geometry = new THREE.Geometry();
-    let material = new THREE.LineBasicMaterial({ linewidth: 3,color: 0xFF0000});
-
-    for (let i = 0; i <= nbrPoints; i++) {
-        let t = (i / nbrPoints) * Math.PI * 2;
-        geometry.vertices.push(
-            new THREE.Vector3(
-                Math.cos(t) * R,
-                Math.sin(t) * R,
-                0));
-    }
-
-    let cercle = new THREE.Line(geometry, material);
-    cercle.position.set(x, y,  0.133);
-    let groupe = new THREE.Group();
-    groupe.add(sphere);
-    groupe.add(cercle);
-    return groupe;
 }
 
 function creation_quille(X,Y) { //Permet de créer une quille aux coordonnées (X,Y,0)
@@ -210,7 +206,7 @@ function creation_quille(X,Y) { //Permet de créer une quille aux coordonnées (
     let P1 = new THREE.Vector3(0.03, 0.13, 0);
     let P2 = new THREE.Vector3(0.025, 0.13, 0);
     let P3 = new THREE.Vector3(0, 0.12, 0);
-    let lathe1 = latheBez3(nbPtCB, nbePtRot, P0, P1, P2, P3, "#FFFFFF", 1, false);
+    let lathe1 = latheBez3(nbPtCB, nbePtRot, P0, P1, P2, P3, "#FF0000", 1, false);
 
     //2ème Lathe
     //Points de contrôle et courbe de Bézier
@@ -220,7 +216,7 @@ function creation_quille(X,Y) { //Permet de créer une quille aux coordonnées (
     let C1 = new THREE.Vector3(-0.04, (pente1*(-0.005)+ord1), 0);
     let C2 = new THREE.Vector3(-0.02, -0.18, 0);
     let C3 = new THREE.Vector3(-0.05,0, 0);
-    let lathe2 = latheBez3(nbPtCB, nbePtRot, C0, C1, C2, C3, "#bd6c14", 1, false);
+    let lathe2 = latheBez3(nbPtCB, nbePtRot, C0, C1, C2, C3, "#FF0000", 1, false);
 
     //3ème Lathe
     //Points de contrôle et courbe de Bézier
@@ -230,7 +226,7 @@ function creation_quille(X,Y) { //Permet de créer une quille aux coordonnées (
     let D1 = new THREE.Vector3((-0.1 - ord1)/pente1, -0.1, 0);
     let D2 = new THREE.Vector3(0.12, 0.13, 0);
     let D3 = new THREE.Vector3(0, 0.13, 0);
-    let lathe3 = latheBez3(nbPtCB, nbePtRot, D0, D1, D2, D3, "#FFFFFF", 1, false);
+    let lathe3 = latheBez3(nbPtCB, nbePtRot, D0, D1, D2, D3, "#FF0000", 1, false);
 
 
 
@@ -245,5 +241,31 @@ function creation_quille(X,Y) { //Permet de créer une quille aux coordonnées (
     grp.add(lathe1);
     grp.add(lathe2);
     grp.add(lathe3);
+
    return grp;
 }
+// sleep time expects milliseconds
+function sleep (time) {
+    return new Promise((resolve) => setTimeout(resolve, time));
+}
+
+function lancerBoule(x,y,equipe) {
+
+        if (x > -10) {
+            sleep(25).then(() => {
+                boule = creerBoule(x - 0.5, y,equipe);
+                scene.remove(scene.getObjectByName("boule"));
+                scene.add(boule);
+                lancerBoule(x - 0.5, y);
+            });
+        }
+
+
+}
+
+function jeu(){
+    let boule = creerBoule(10,0,1);
+    scene.add(boule);
+    alert("C'est le tour de l'équipe 1");
+}
+

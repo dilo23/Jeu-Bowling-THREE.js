@@ -1,11 +1,11 @@
 // primitive avec Phong
 function surfPhong(geom,coulD,transpa,bolTrans,coulSpe){ 
  let Material = new THREE.MeshPhongMaterial({
-   color: coulD,
+   color: "#223322",
    opacity: transpa,
    transparent: bolTrans,
    //     wireframe: false,
-   specular:coulSpe, 
+   specular:coulSpe,
    flatShading: true,
    side: THREE.DoubleSide,
  });
