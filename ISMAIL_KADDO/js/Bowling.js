@@ -7,7 +7,7 @@ let tabPosQuillesX = [-9.5,-9.5,-9.5,-9.5,-9,-9,-9,-8.5,-8.5,-8];
 let tabPosQuillesY = [0.1,-0.1,0.3,-0.3,0.2,0,-0.2,0.1,-0.1,0];
 let tabPosQuillesBool = ['false','false','false','false','false','false','false','false','false','true'];
 let equipe =1;
-let boule = creerBoule(10, 0, 1);
+let boule = creerBoule(10, 0, equipe);
 let quilles_tombees = 0;
 
 let canvasWidth = canvas.offsetWidth;
@@ -137,10 +137,10 @@ function init() {
             couleurSphere = new THREE.Color(0xff0000);
             couleurCercle = new THREE.Color(0x0000ff);
         }
-        else {
+        else if(equipe===2){ {
             couleurSphere = new THREE.Color(0x0000ff);
             couleurCercle = new THREE.Color(0xff0000);
-        }
+        }}
         let nbrPoints = 50;
         let R=0.08;
         let sphereGeometry = new THREE.SphereGeometry(R, nbrPoints, nbrPoints);
@@ -228,7 +228,7 @@ function init() {
         if(x<=-7){
             for (let i=0;i<10;i++){
                 let dist = Math.sqrt(Math.pow((x-tabPosQuillesX[i]),2)+Math.pow((y-tabPosQuillesY[i]),2));
-                if(dist<0.25){
+                if(dist<0.3){
                     tabPosQuillesBool[i]=true;
                 }
             }
@@ -243,71 +243,81 @@ function init() {
         }
         else {
             quilles_tombees = compterQuilles() - quilles_tombees;
-            if (tour === 0 || tour === 2 || tour === 4 || tour === 6) {
-                tabCel[tour].innerHTML = quilles_tombees.toString();
+            let mod= tour%2;
+            if(mod===0){
                 if(quilles_tombees===10){
                     tabCel[tour].innerHTML = "X";
                     tabCel[tour+1].innerHTML = "-";
                     alert("Strike");
-
-                    boule.position.x = 10;
-
-                    if(equipe===1){
-                        equipe=2;
-                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
-                        if(tour===0)
-                            tabCel[8].innerHTML = "30";
-                        if(tour===4)
-                            tabCel[9].innerHTML = "30";
-                        remiseAzero(equipe);
+                    if(tour===0){
+                        tabCel[8].innerHTML = "30";
                     }
-                    else if(equipe===2){
-                        equipe=1;
-                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
-                        remiseAzero(equipe);
-                        if(tour===2)
-                            tabCel[10].innerHTML = "30";
-                        if(tour===6)
-                            tabCel[11].innerHTML = "30";
+                    else if(tour===2){
+                        tabCel[10].innerHTML = "30";
                     }
-                    tour++;
+                    else if(tour===4){
+                        tabCel[9].innerHTML = "30";
+                    }
+                    else if(tour===6){
+                        tabCel[11].innerHTML = "30";
+                    }
+                    remiseAzero(equipe);
+                    tour= tour+2;
                 }
                 else{
                     tabCel[tour].innerHTML = quilles_tombees.toString();
+                    tour= tour+1;
+                    boule.position.set(10, 0, 0.13);
+
                 }
 
 
             }
-            else if (tour === 1 || tour === 3 || tour === 5 || tour === 7) {
-
-                tabCel[tour].innerHTML = quilles_tombees.toString();
-                if(quilles_tombees===10){
-                    tabCel[tour].innerHTML = quilles_tombees.toString();
+            else if (mod===1) {
+                if(compterQuilles()===10){
                     alert("Spare");
-                    boule.position.x = 10;
-
-                    if(equipe===1){
-                        equipe=2;
-                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
-                        if(tour===1)
-                            tabCel[8].innerHTML = "15";
-                        if(tour===3)
-                            tabCel[9].innerHTML = "15";
-                        remiseAzero(equipe);
+                    tabCel[tour].innerHTML = "-";
+                    if(tour===1){
+                        tabCel[8].innerHTML ="15" ;
                     }
-                    else if(equipe===2){
-                        equipe=1;
-                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
-                        if(tour===5)
-                            tabCel[10].innerHTML = "15";
-                        if(tour===7)
-                            tabCel[11].innerHTML = "15";
-                        remiseAzero(equipe);
+                    else if(tour===3){
+                        tabCel[10].innerHTML = "15";
                     }
-
+                    else if(tour===5){
+                        tabCel[9].innerHTML = "15";
+                    }
+                    else if(tour===7){
+                        tabCel[11].innerHTML = "15";
+                    }
+                    tour= tour+1;
+                     changerEquipe();
+                     remiseAzero(equipe);
                 }
-            }
+                else{
+                    tabCel[tour].innerHTML = quilles_tombees.toString();
 
+                    boule.position.set(10, 0, 0.13);
+                    if(tour===1){
+                        tabCel[8].innerHTML =score(tour,tour-1).toString() ;
+                    }
+                    else if(tour===3){
+                        tabCel[10].innerHTML = score(tour,tour-1).toString();
+                    }
+                    else if(tour===5){
+                        tabCel[9].innerHTML = score(tour,tour-1).toString();
+                    }
+                    else if(tour===7){
+                        tabCel[11].innerHTML = score(tour,tour-1).toString();
+                        alert("Fin du jeu");
+                        finJeu();
+                    }
+                    changerEquipe();
+                    tour= tour+1;
+                    remiseAzero(equipe);
+                }
+
+
+            }
             sleep(3000).then(() => {
             });
         }
@@ -349,7 +359,7 @@ let tourEquipe = document.getElementById("tourEquipe");
 tourEquipe.textContent = "Tour de l'équipe " + equipe;
 let tabCellules = ["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12"];
 let tabCel=[document.getElementById("c1"),document.getElementById("c2"),document.getElementById("c3"),document.getElementById("c4"),document.getElementById("c5"),document.getElementById("c6"),document.getElementById("c7"),document.getElementById("c8"),document.getElementById("c9"),document.getElementById("c10"),document.getElementById("c11"),document.getElementById("c12")];
-let tour =-1;
+let tour =0;
 function compterQuilles(){
     let compteur = 0;
     for(let i=0;i<10;i++){
@@ -361,8 +371,9 @@ function compterQuilles(){
 }
 function lancerClick()
 {
+
     lancerBoule(boule.position.x,boule.position.y,tabCellules[tour]);
-    tour++;
+
 }
 function remiseAzero(equipe){
     for(let i=0;i<10;i++){
@@ -375,10 +386,43 @@ function remiseAzero(equipe){
         tabQuilles.push(creation_quille(tabPosQuillesX[i], tabPosQuillesY[i], i));
         scene.add(tabQuilles[i]);
     }
-    scene.remove(boule);
+    scene.remove(scene.getChildByName("boule"));
     boule = creerBoule(10, 0, equipe);
     scene.add(boule);
-    boule.position.set(10, 0, 0.13);
 
     quilles_tombees = 0;
+    tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
+}
+function changerEquipe(){
+    if(equipe===1){
+        equipe=2;
+    }
+    else{
+        equipe=1;
+    }
+    return equipe;
+}
+function score(a,b){
+    return parseInt(tabCel[a].textContent)+parseInt(tabCel[b].textContent);
+}
+function finJeu(){
+    document.querySelector('#lancer').disabled = true;
+    let score1 = parseInt(tabCel[8].textContent)+parseInt(tabCel[9].textContent);
+    let score2 = parseInt(tabCel[10].textContent)+parseInt(tabCel[11].textContent);
+    remiseAzero(1)
+    if(score1>score2){
+        document.getElementById("tourEquipe").textContent = "L'équipe 1 a gagné";
+        alert("L'équipe 1 a gagné");
+
+    }
+    else if(score1<score2){
+        document.getElementById("tourEquipe").textContent = "L'équipe 2 a gagné";
+        alert("L'équipe 2 a gagné");
+
+    }
+    else {
+        document.getElementById("tourEquipe").textContent = "Il y a égalité entre les deux équipes";
+        alert("Egalité");
+    }
+
 }
