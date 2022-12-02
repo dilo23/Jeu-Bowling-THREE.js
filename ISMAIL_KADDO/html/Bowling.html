@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <title>Bowling</title>
+        <script src="../js/ModeleMateriaux.js"></script>
         <link rel="stylesheet" href="../css/style.css">
         <script src="../js/libs/three/three.js"></script>
         <script src="../js/libs/three/controls/OrbitControls.js"></script>
@@ -10,12 +11,17 @@
         <script src="../js/Bezier.js"></script>
         <script src="../js/GeometrieUtile.js"></script>
         <script src="../js/01_lathe.js"></script>
-        <script src="../js/ModeleMateriaux.js"></script>
+
         <script src="../js/libs/util/dat.gui.js"></script>
         <script src="../js/libs/util/olddat.gui.js"></script>
         <script src="../js/libs/util/Stats.js"></script>
         <script src="../js/libs/util/util.js"></script>
-
+        <script src="../js/01_lathe.js"></script>
+        <script src="../js/libs/other/physijs/ammo.js"></script>
+        <script src="../js/libs/other/d3-threeD.js"></script>
+        <script src="../js/libs/three/geometries/ConvexGeometry.js"></script>
+        <script src="../js/libs/three/geometries/ParametricGeometries.js"></script>
+        <script src="../js/02_latheTableau.js"></script>
     </head>
     <body onload="init()">
 
@@ -50,8 +56,6 @@
                 <td class="eq2 E2ScoreTotal2" colspan="2"></td>
             </tr>
         </table>
-
-        <div id="datContainer"></div>
 
         <canvas id="canvas"></canvas>
         <script src="../js/Bowling.js"></script>
