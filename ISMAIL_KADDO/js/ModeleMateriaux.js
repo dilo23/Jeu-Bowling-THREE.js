@@ -4,7 +4,7 @@ function surfPhong(geom,coulD,transpa,bolTrans,coulSpe){
    color: "#223322",
    opacity: transpa,
    transparent: bolTrans,
-   //     wireframe: false,
+   wireframe: false,
    specular:coulSpe,
    flatShading: true,
    side: THREE.DoubleSide,

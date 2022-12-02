@@ -5,19 +5,21 @@ let clock = new THREE.Clock();
 let tabQuilles = [];
 let tabPosQuillesX = [-9.5,-9.5,-9.5,-9.5,-9,-9,-9,-8.5,-8.5,-8];
 let tabPosQuillesY = [0.1,-0.1,0.3,-0.3,0.2,0,-0.2,0.1,-0.1,0];
-let tabPosQuillesBool = ['false','false','false','false','false','false','false','false','false','false'];
-let lancer =0;
+let tabPosQuillesBool = ['false','false','false','false','false','false','false','false','false','true'];
+let equipe =1;
+let boule = creerBoule(10, 0, 1);
+let quilles_tombees = 0;
+
+let canvasWidth = canvas.offsetWidth;
+let canvasHeight = canvas.offsetHeight;
+
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(30, canvasWidth / canvasHeight, 1, 1000);
 function init() {
-    let boule = creerBoule(10,0,1);
-
-    let canvasWidth = canvas.offsetWidth;
-    let canvasHeight = canvas.offsetHeight;
-
-    let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera( 30, canvasWidth / canvasHeight, 1, 1000 );
+    scene.add(boule);
     let renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas});
     renderer.setClearColor(new THREE.Color(0XFFFF83));
-    renderer.setSize(canvasWidth ,canvasHeight);
+    renderer.setSize(canvasWidth, canvasHeight);
     renderer.shadowMap.enabled = true;
 
     /*scene.add( new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0).normalize(), new THREE.Vector3(0, 0, 0),1.0,0xff0000));//rouge
@@ -31,29 +33,28 @@ function init() {
     cameraControls.Keys = true;
 
 
-
     scene.add(creerPiste());
     scene.add(creerRigole(1));
     scene.add(creerRigole(2));
 
 
     //Création quilles
-    for (let i =0; i<10;i++) {
+    for (let i = 0; i < 10; i++) {
         tabQuilles.push(creation_quille(tabPosQuillesX[i], tabPosQuillesY[i], i));
         scene.add(tabQuilles[i]);
     }
 
 
-
-
-
     function animate() {
-        requestAnimationFrame( animate );
-        renderer.render( scene, camera );
+        majQuilles();
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
         stats.end();
-    }
-    animate();
 
+    }
+
+    animate();
+}
     //********************************************************
     //
     //  D E B U T     M E N U     G U I
@@ -73,17 +74,6 @@ function init() {
     });
     deplacement.open();
 
-    let obj = { LANCER:function()
-        {
-            lancer=1;
-            lancerBoule(boule.position.x,boule.position.y);
-            majQuilles();
-        }
-
-    };
-
-    gui.add(obj,'LANCER');
-
 
     //********************************************************
     //
@@ -93,9 +83,8 @@ function init() {
 
     function render() {
         stats.update();
-        let delta = clock.getDelta();
-        cameraControls.update(delta);
         renderer.render(scene, camera);
+
     }
     function creerPiste() {
         let floorTexture = new THREE.TextureLoader().load('../textures/sol.png');
@@ -113,7 +102,7 @@ function init() {
         let floorTexture = new THREE.TextureLoader().load('../textures/glow.png');
         let gutterMaterial = new THREE.MeshBasicMaterial({
             clearCoat: 1.0,
-            map:floorTexture
+            map:floorTexture,
         });
 
         let cutoutBoxGeometry = new THREE.BoxGeometry(gutterSize,length, gutterSize);
@@ -176,6 +165,7 @@ function init() {
         groupe.add(sphere);
         groupe.add(cercle);
         groupe.position.set(x, y, 0.13);
+
         return groupe;
 
 
@@ -235,35 +225,112 @@ function init() {
         return new Promise((resolve) => setTimeout(resolve, time));
     }
     function lancerBoule(x,y) {
-            if(x<=-7){
-                for (let i=0;i<10;i++){
-                    let dist = Math.sqrt(Math.pow((x-tabPosQuillesX[i]),2)+Math.pow((y-tabPosQuillesY[i]),2));
-                    if(dist<0.15){
-                        tabPosQuillesBool[i]=true;
+        if(x<=-7){
+            for (let i=0;i<10;i++){
+                let dist = Math.sqrt(Math.pow((x-tabPosQuillesX[i]),2)+Math.pow((y-tabPosQuillesY[i]),2));
+                if(dist<0.25){
+                    tabPosQuillesBool[i]=true;
+                }
+            }
+        }
+
+        if(x>-10){
+            boule.position.x-=0.1;
+            boule.children[1].rotation.x-=0.15;
+            sleep(5).then(() => {
+                lancerBoule(boule.position.x,boule.position.y);
+            });
+        }
+        else {
+            quilles_tombees = compterQuilles() - quilles_tombees;
+            if (tour === 0 || tour === 2 || tour === 4 || tour === 6) {
+                tabCel[tour].innerHTML = quilles_tombees.toString();
+                if(quilles_tombees===10){
+                    tabCel[tour].innerHTML = "X";
+                    tabCel[tour+1].innerHTML = "-";
+                    alert("Strike");
+
+                    boule.position.x = 10;
+
+                    if(equipe===1){
+                        equipe=2;
+                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
+                        if(tour===0)
+                            tabCel[8].innerHTML = "30";
+                        if(tour===4)
+                            tabCel[9].innerHTML = "30";
+                        remiseAzero(equipe);
                     }
+                    else if(equipe===2){
+                        equipe=1;
+                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
+                        remiseAzero(equipe);
+                        if(tour===2)
+                            tabCel[10].innerHTML = "30";
+                        if(tour===6)
+                            tabCel[11].innerHTML = "30";
+                    }
+                    tour++;
+                }
+                else{
+                    tabCel[tour].innerHTML = quilles_tombees.toString();
+                }
+
+
+            }
+            else if (tour === 1 || tour === 3 || tour === 5 || tour === 7) {
+
+                tabCel[tour].innerHTML = quilles_tombees.toString();
+                if(quilles_tombees===10){
+                    tabCel[tour].innerHTML = quilles_tombees.toString();
+                    alert("Spare");
+                    boule.position.x = 10;
+
+                    if(equipe===1){
+                        equipe=2;
+                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
+                        if(tour===1)
+                            tabCel[8].innerHTML = "15";
+                        if(tour===3)
+                            tabCel[9].innerHTML = "15";
+                        remiseAzero(equipe);
+                    }
+                    else if(equipe===2){
+                        equipe=1;
+                        tourEquipe.textContent = "Tour de l'équipe " + equipe.toString();
+                        if(tour===5)
+                            tabCel[10].innerHTML = "15";
+                        if(tour===7)
+                            tabCel[11].innerHTML = "15";
+                        remiseAzero(equipe);
+                    }
+
                 }
             }
 
-            if(x<-10){
-
-            }
-            else{
-                boule.position.x-=0.1;
-                sleep(5).then(() => {
-                    lancerBoule(boule.position.x,boule.position.y);
-                });
-
-            }
-    }
-    scene.add(boule);
-    function jeu(){
-        alert("Cest le tour de l'èquipe 1");
-        while(lancer!==0){
-
+            sleep(3000).then(() => {
+            });
         }
-        majQuilles();
+
+
+        /*if (x <= -7) {
+            for (let i = 0; i < 10; i++) {
+                let dist = Math.sqrt(Math.pow((x - tabPosQuillesX[i]), 2) + Math.pow((y - tabPosQuillesY[i]), 2));
+                if (dist < 0.15) {
+                    tabPosQuillesBool[i] = true;
+                }
+            }
+        }
+        while (x > -10) {
+
+            boule.children[1].rotation.x -= 0.15;
+            sleep(5).then(() => {
+                boule.position.x -= 0.1;
+            });
+
+        }*/
     }
-    jeu();
+
 
     function majQuilles(){
         let selectedObject;
@@ -275,18 +342,43 @@ function init() {
             }
 
         }
-        alert(tabPosQuillesBool);
 
     }
-    function compterQuilles(){
 
-        let compteur = 0;
-        for (let elem of tabPosQuillesBool) {
-            if (elem === 'true') {
-                compteur++;
-            }
+let tourEquipe = document.getElementById("tourEquipe");
+tourEquipe.textContent = "Tour de l'équipe " + equipe;
+let tabCellules = ["c1","c2","c3","c4","c5","c6","c7","c8","c9","c10","c11","c12"];
+let tabCel=[document.getElementById("c1"),document.getElementById("c2"),document.getElementById("c3"),document.getElementById("c4"),document.getElementById("c5"),document.getElementById("c6"),document.getElementById("c7"),document.getElementById("c8"),document.getElementById("c9"),document.getElementById("c10"),document.getElementById("c11"),document.getElementById("c12")];
+let tour =-1;
+function compterQuilles(){
+    let compteur = 0;
+    for(let i=0;i<10;i++){
+        if (tabPosQuillesBool[i] === true) {
+            compteur++;
         }
-        return compteur;
     }
+    return compteur;
+}
+function lancerClick()
+{
+    lancerBoule(boule.position.x,boule.position.y,tabCellules[tour]);
+    tour++;
+}
+function remiseAzero(equipe){
+    for(let i=0;i<10;i++){
+        tabPosQuillesBool[i]=false;
+        let selectedObject = scene.getObjectByName(tabQuilles[i].name);
+        scene.remove(selectedObject);
+    }
+    //Création quilles
+    for (let i = 0; i < 10; i++) {
+        tabQuilles.push(creation_quille(tabPosQuillesX[i], tabPosQuillesY[i], i));
+        scene.add(tabQuilles[i]);
+    }
+    scene.remove(boule);
+    boule = creerBoule(10, 0, equipe);
+    scene.add(boule);
+    boule.position.set(10, 0, 0.13);
 
+    quilles_tombees = 0;
 }
